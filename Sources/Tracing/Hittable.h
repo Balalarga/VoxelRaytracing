@@ -9,12 +9,11 @@ class IHittable;
 
 struct HitResult
 {
-	bool hit = false;
 	glm::vec3 point{0};
 	glm::vec3 normal{0};
 	IHittable* object{};
 	
-	operator bool() { return hit; }
+	operator bool() const { return object != nullptr; }
 };
 
 class IHittable

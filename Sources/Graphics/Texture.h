@@ -1,6 +1,21 @@
 ﻿#pragma once
 
+#include <functional>
 #include <SDL.h>
+
+class PixelData
+{
+public:
+	PixelData(SDL_Color& color, float ux, float uy, float aspect_ratio)
+		: color(color),
+		ux(ux),
+		uy(uy),
+		aspectRatio(aspect_ratio) {}
+
+	SDL_Color& color;
+	float ux, uy;
+	float aspectRatio;
+};
 
 
 class Texture
@@ -14,7 +29,7 @@ public:
 	bool WasInited() const { return _wasInited; }
 	const SDL_Point& Size() const { return _size; }
 	
-	void Edit(void(*func)(SDL_Color&, float, float));
+	void Edit(std::function<void(PixelData)> func);
 	
 	
 private:

@@ -6,7 +6,7 @@
 #include "Graphics/RendererWindow.h"
 #include "Graphics/Texture.h"
 #include "Tracing/Ray.h"
-
+#include "Tracing/Scene.h"
 
 bool PollEvents()
 {
@@ -38,10 +38,10 @@ int main(int argc, char* args[])
 		return -1;
 	}
 
-	Ray ray;
-	ray.direction = {1, 1, 0};
-	auto r = ray.at(2);
-	std::cout << r;
+	Scene scene;
+	Sphere sphere(Material({128, 55, 55, 0}));
+	sphere.position.z += 5;
+	scene.AddHittable(&sphere);
 	
 	bool quit = false;
 	while (quit == false)
@@ -51,13 +51,7 @@ int main(int argc, char* args[])
 		SDL_Rect textureRect{0, 0, texture.Size().x, texture.Size().y};
 		window->Bind(texture);
 		window->Clear({50, 128, 50, 0});
-
-		texture.Edit([](SDL_Color& pixel, float ux, float uy)
-		{
-			pixel.r = static_cast<Uint8>(255.f * ux);
-			pixel.g = static_cast<Uint8>(255.f * uy);
-			pixel.b = static_cast<Uint8>(255.f * uy);
-		});
+		scene.RenderOn(texture);
 		
 		window->Bind();
 		window->Clear({128, 50, 50, 0});

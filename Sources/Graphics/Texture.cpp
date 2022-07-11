@@ -29,7 +29,7 @@ Texture::~Texture()
 		SDL_DestroyTexture(_sdlTexture);
 }
 
-void Texture::Edit(void(*func)(SDL_Color&, float, float))
+void Texture::Edit(std::function<void(PixelData)> func)
 {
 	SDL_Rect lockRect{0, 0, _size.x, _size.y};
 	SDL_Color* pixels{};
@@ -46,7 +46,7 @@ void Texture::Edit(void(*func)(SDL_Color&, float, float))
 		for (int y = 0; y < _size.y; ++y)
 		{
 			float uy = static_cast<float>(y) / static_cast<float>(_size.y);
-			func(GetPixel(pixels, x, y, _size.x), ux, uy);
+			func({GetPixel(pixels, x, y, _size.x), ux, uy, _size.x/(float)_size.y});
 		}
 	}
 	SDL_UnlockTexture(_sdlTexture);

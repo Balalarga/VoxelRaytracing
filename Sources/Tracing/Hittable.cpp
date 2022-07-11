@@ -15,10 +15,11 @@ HitResult Sphere::Hit(Ray ray)
 	float b = 2.f * dot(oc, ray.direction);
 	float c = dot(oc,oc) - radius*radius;
 	float discriminant = b*b - 4*a*c;
-	result.hit = discriminant > 0;
 	
-	if (result)
+	if (discriminant >= 0)
+	{
 		result.object = this;
+	}
 	
 	return result;
 }
