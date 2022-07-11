@@ -17,8 +17,6 @@ set(ADDITIONAL_LINK_DIRS ${GLEW_DIR}/lib/x64)
 set(BINARIES ${GLEW_DIR}/bin/x64)
 
 if(WIN32)
-    add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
-    add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
     set(PROJECT_LIBS glew32 opengl32 glu32 Imm32)
     
     if(MINGW)
@@ -68,11 +66,6 @@ add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${ADDITIONAL_SOURCES})
 target_link_directories(${PROJECT_NAME} PRIVATE ${ADDITIONAL_LINK_DIRS})
 target_link_libraries(${PROJECT_NAME} ${PROJECT_LIBS})
 target_include_directories(${PROJECT_NAME} PRIVATE Sources ${ADDITIONAL_INCLUDE_DIRS})
-
-# Update solution
-if (MSVC)
-    add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD COMMAND cmd ${CMAKE_SOURCE_DIR}/GenerateVsProject.bat)
-endif()
 
 if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json)
     configure_file(${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json ${CMAKE_SOURCE_DIR}/compile_commands.json COPYONLY)

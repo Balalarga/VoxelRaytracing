@@ -23,8 +23,6 @@ bool PollEvents()
 }
 
 
-
-
 int main(int argc, char* args[])
 {
 	RendererWindow* window = RendererWindow::Init("VoxelRaytracing", {800, 600});
