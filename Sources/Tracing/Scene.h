@@ -17,6 +17,8 @@ public:
 	void AddHittable(IHittable* hittable) { _objects.push_back(hittable); }
 	void AddLight(Light* light) { _lights.push_back(light); }
 
+protected:
+	HitResult Intersect(Ray&& ray);
 	
 private:
 	std::vector<IHittable*> _objects;

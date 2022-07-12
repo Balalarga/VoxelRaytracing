@@ -75,16 +75,21 @@ HitResult Cube::Hit(Ray ray)
 	float tzmin = (_bounds[sign[2]].z - ray.origin.z) * invDir.z;
 	float tzmax = (_bounds[1 - sign[2]].z - ray.origin.z) * invDir.z;
 
-	if ((tmin > tzmax) || (tzmin > tmax))
+	if (tmin > tzmax || tzmin > tmax)
 		return {};
-
-	// if (tzmin > tmin)
-	// 	tmin = tzmin;
-	// if (tzmax < tmax)
-	// 	tmax = tzmax;
-	// hit.distance = tmin;
+	
+	HitResult result;
+	result.object = this;
+	
+	if (tzmin > tmin)
+		tmin = tzmin;
+	if (tzmax < tmax)
+		tmax = tzmax;
+	
+	result.distance = tmin;
+	
 	// hit.normal = Vec3f(mimage.c[0], mimage.c[1], -mimage.c[3]);
 	// hit.pos = ray.Origin + ray.Dir * hit.distance;
 	
-	return {this};
+	return result;
 }

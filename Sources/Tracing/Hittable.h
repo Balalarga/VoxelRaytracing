@@ -13,6 +13,7 @@ struct HitResult
 	IHittable* object{};
 	glm::vec3 point{0};
 	glm::vec3 normal{0};
+	float distance{0};
 	
 	operator bool() const { return object != nullptr; }
 };

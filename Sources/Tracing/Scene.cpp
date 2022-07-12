@@ -14,15 +14,33 @@ void Scene::RenderOn(Texture& texture)
 		float ny = pixel.uy * 2.f - 1.f;
 		ray.direction = {nx, ny, -1.f};
 
-		for (IHittable*& obj : _objects)
+		if (HitResult hit = Intersect(std::move(ray)))
 		{
-			HitResult hit = obj->Hit(ray);
-			if (hit)
-			{
-				pixel.color = hit.object->GetMaterial().color;
-				return;
-			}
+			pixel.color = hit.object->GetMaterial().color;
+			
+			Ray lightRay;
+			lightRay.direction = ray.Reflect(hit.normal);
+			// offset the original point to avoid occlusion by the object itself
+			float scalar = lightRay.direction.x*hit.normal.x+lightRay.direction.y*hit.normal.y+lightRay.direction.z * hit.normal.z;
+			lightRay.origin = scalar < 0 ? hit.point - hit.normal * 1e-3f : hit.point + hit.normal * 1e-3f;
 		}
-		pixel.color = _backgroundColor;
+		else
+		{
+			pixel.color = _backgroundColor;	
+		}
 	});
+}
+
+HitResult Scene::Intersect(Ray&& ray)
+{
+	HitResult closestHit;
+	closestHit.distance = std::numeric_limits<float>::max();
+	for (IHittable*& obj : _objects)
+	{
+		HitResult hit = obj->Hit(ray);
+		if (closestHit.distance > hit.distance)
+			closestHit = hit;
+	}
+	
+	return closestHit;
 }
