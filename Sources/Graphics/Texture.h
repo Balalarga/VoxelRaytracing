@@ -6,15 +6,13 @@
 class PixelData
 {
 public:
-	PixelData(SDL_Color& color, float ux, float uy, float aspect_ratio)
+	PixelData(SDL_Color& color, float ux, float uy)
 		: color(color),
 		ux(ux),
-		uy(uy),
-		aspectRatio(aspect_ratio) {}
+		uy(uy) {}
 
 	SDL_Color& color;
 	float ux, uy;
-	float aspectRatio;
 };
 
 

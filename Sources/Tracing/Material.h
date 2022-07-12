@@ -5,5 +5,5 @@
 struct Material
 {
 	Material(SDL_Color color): color(color) {}
-	SDL_Color color{255, 255 , 255, 0};
+	SDL_Color color;
 };

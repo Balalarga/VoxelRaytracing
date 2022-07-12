@@ -8,6 +8,7 @@
 #include "Tracing/Ray.h"
 #include "Tracing/Scene.h"
 
+
 bool PollEvents()
 {
 	bool quit = false;
@@ -35,26 +36,31 @@ int main(int argc, char* args[])
 	if (!texture.WasInited())
 	{
 		printf("Failed to initialize texture!\n");
-		return -1;
+		return -2;
 	}
 
 	Scene scene;
-	Sphere sphere(Material({128, 55, 55, 0}));
-	sphere.position.z += 5;
+	
+	Sphere sphere(1.f);
+	sphere.SetPosition({0, 0, 5});
 	scene.AddHittable(&sphere);
 	
+	Cube cube(1.f);
+	cube.SetPosition({2, 0, 5});
+	scene.AddHittable(&cube);
+	
 	bool quit = false;
-	while (quit == false)
+	while (!quit)
 	{
 		quit = PollEvents();
 		
 		SDL_Rect textureRect{0, 0, texture.Size().x, texture.Size().y};
 		window->Bind(texture);
-		window->Clear({50, 128, 50, 0});
+		window->Clear();
 		scene.RenderOn(texture);
 		
 		window->Bind();
-		window->Clear({128, 50, 50, 0});
+		window->Clear();
 		window->Render(texture, textureRect);
 		window->Update();
 	}
