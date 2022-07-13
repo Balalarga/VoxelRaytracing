@@ -5,6 +5,7 @@
 #include "GlmUtils.h"
 #include "Graphics/RendererWindow.h"
 #include "Graphics/Texture.h"
+#include "Tracing/Light.h"
 #include "Tracing/Ray.h"
 #include "Tracing/Scene.h"
 
@@ -40,6 +41,10 @@ int main(int argc, char* args[])
 	}
 
 	Scene scene;
+	
+	Light light;
+	light.SetPosition({2, 0, 0});
+	scene.AddLight(&light);
 	
 	Sphere sphere(1.f);
 	sphere.SetPosition({0, 0, 5});

@@ -1,6 +1,20 @@
 ﻿#include "Scene.h"
 
 #include "Graphics/Texture.h"
+#include "GlmUtils.h"
+#include "Light.h"
+
+glm::vec3 sGlobalAmbient{1, 1, 1};
+
+SDL_Color toSdlColor(const glm::vec3& fColor)
+{
+	return {
+		static_cast<Uint8>(fColor.r * 255.f),
+		static_cast<Uint8>(fColor.g * 255.f),
+		static_cast<Uint8>(fColor.b * 255.f),
+		255
+	};
+}
 
 
 void Scene::RenderOn(Texture& texture)
@@ -14,24 +28,37 @@ void Scene::RenderOn(Texture& texture)
 		float ny = pixel.uy * 2.f - 1.f;
 		ray.direction = {nx, ny, -1.f};
 
-		if (HitResult hit = Intersect(std::move(ray)))
+		if (HitResult hit = Intersect(ray))
 		{
-			pixel.color = hit.object->GetMaterial().color;
+			Material material = hit.object->GetMaterial();
+			if (_lights.empty())
+			{
+				pixel.color = toSdlColor(material.diffuse);
+				return;
+			}
+			material.ambient *= sGlobalAmbient;
+
+			glm::vec3 lightDir = normalize(_lights[0]->GetPosition() - hit.point);
+			float diffuseLight = std::max(dot(hit.normal, lightDir), 0.f);
+			material.diffuse *= _lights[0]->color * diffuseLight;
 			
-			Ray lightRay;
-			lightRay.direction = ray.Reflect(hit.normal);
-			// offset the original point to avoid occlusion by the object itself
-			float scalar = lightRay.direction.x*hit.normal.x+lightRay.direction.y*hit.normal.y+lightRay.direction.z * hit.normal.z;
-			lightRay.origin = scalar < 0 ? hit.point - hit.normal * 1e-3f : hit.point + hit.normal * 1e-3f;
+			glm::vec3 rayInvDir = normalize(ray.origin - hit.point);
+			glm::vec3 H = normalize(lightDir + rayInvDir);
+			float specularLight = pow(std::max(dot(hit.normal, H), 0.f), material.shininess);
+			if (diffuseLight <= 0)
+				specularLight = 0;
+			material.specular *= _lights[0]->color * specularLight;
+
+			pixel.color = toSdlColor(material.diffuse);
 		}
 		else
 		{
-			pixel.color = _backgroundColor;	
+			pixel.color = _backgroundColor;
 		}
 	});
 }
 
-HitResult Scene::Intersect(Ray&& ray)
+HitResult Scene::Intersect(const Ray& ray)
 {
 	HitResult closestHit;
 	closestHit.distance = std::numeric_limits<float>::max();

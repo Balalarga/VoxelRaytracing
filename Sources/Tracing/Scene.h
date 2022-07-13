@@ -18,7 +18,7 @@ public:
 	void AddLight(Light* light) { _lights.push_back(light); }
 
 protected:
-	HitResult Intersect(Ray&& ray);
+	HitResult Intersect(const Ray& ray);
 	
 private:
 	std::vector<IHittable*> _objects;

@@ -1,6 +1,11 @@
 ﻿#include "Hittable.h"
 
-Material IHittable::sDefaultMaterial({150, 50, 50, 0});
+Material IHittable::sDefaultMaterial(
+	{0, 0, 0},
+	{0.6, 0.2, 0.2},
+	{0.6, 0.2, 0.2},
+	{0.6, 0.2, 0.2}
+	);
 
 IHittable::IHittable(const Material& inMaterial):
 	_material(inMaterial)
@@ -18,7 +23,7 @@ Sphere::Sphere(float radius, const Material& inMaterial):
 {
 }
 
-HitResult Sphere::Hit(Ray ray)
+HitResult Sphere::Hit(const Ray& ray)
 {
 	HitResult result;
 
@@ -31,6 +36,9 @@ HitResult Sphere::Hit(Ray ray)
 	if (discriminant >= 0)
 	{
 		result.object = this;
+		result.distance = (-b - sqrt(discriminant)) / (2 * a);
+		result.point = ray.At(result.distance);
+		result.normal = GetPosition() - result.point;
 	}
 	
 	return result;
@@ -51,7 +59,7 @@ void Cube::SetPosition(const glm::vec3& newPosition)
 	_bounds[1] = newPosition + glm::vec3(size) / 2.0f;
 }
 
-HitResult Cube::Hit(Ray ray)
+HitResult Cube::Hit(const Ray& ray)
 {
 	glm::vec3 invDir = 1.f / ray.direction;
 	int sign[3]{
@@ -87,9 +95,8 @@ HitResult Cube::Hit(Ray ray)
 		tmax = tzmax;
 	
 	result.distance = tmin;
-	
-	// hit.normal = Vec3f(mimage.c[0], mimage.c[1], -mimage.c[3]);
-	// hit.pos = ray.Origin + ray.Dir * hit.distance;
+	result.point = ray.At(result.distance);
+	result.normal = GetPosition() - result.point;
 	
 	return result;
 }

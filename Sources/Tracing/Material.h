@@ -4,6 +4,9 @@
 
 struct Material
 {
-	Material(SDL_Color color): color(color) {}
-	SDL_Color color;
+	glm::vec3 emissive{};
+	glm::vec3 ambient{};
+	glm::vec3 diffuse{};
+	glm::vec3 specular{};
+	float shininess = 1.f;
 };

@@ -24,7 +24,7 @@ public:
 	IHittable(const Material& inMaterial = sDefaultMaterial);
 	virtual ~IHittable() = default;
 
-	virtual HitResult Hit(Ray ray) = 0;
+	virtual HitResult Hit(const Ray& ray) = 0;
 
 	virtual void SetMaterial(const Material& newMaterial);
 	const Material& GetMaterial() const { return _material; }
@@ -42,7 +42,7 @@ class Sphere: public IHittable
 public:
 	Sphere(float radius = 1.f, const Material& inMaterial = sDefaultMaterial);
 
-	HitResult Hit(Ray ray) override;
+	HitResult Hit(const Ray& ray) override;
 	
 	float radius;
 };
@@ -55,7 +55,7 @@ public:
 	void SetPosition(const glm::vec3& newPosition) override;
 	
 	// Optimized slab method
-	HitResult Hit(Ray ray) override;
+	HitResult Hit(const Ray& ray) override;
 	
 	float size;
 	
