@@ -2,11 +2,8 @@
 #include <SDL.h>
 #include <thread>
 
-#include "GlmUtils.h"
 #include "Graphics/RendererWindow.h"
 #include "Graphics/Texture.h"
-#include "Tracing/Light.h"
-#include "Tracing/Ray.h"
 #include "Tracing/Scene.h"
 
 

@@ -2,10 +2,9 @@
 #include <vector>
 
 #include "Hittable.h"
+#include "Light.h"
 #include "Graphics/Texture.h"
 
-
-class Light;
 
 class Scene
 {

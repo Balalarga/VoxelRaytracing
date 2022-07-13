@@ -4,7 +4,6 @@
 #include <iostream>
 
 
-
 inline std::ostream& operator<<(std::ostream& stream, const glm::vec3& vec)
 {
     stream << "(" << vec.x << ", "<< vec.y << ", " << vec.z << ")";
