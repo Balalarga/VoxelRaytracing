@@ -1,10 +1,10 @@
 ﻿#include "Hittable.h"
 
 Material IHittable::sDefaultMaterial(
-	{0, 0, 0},
+	{0.0, 0.0, 0.0},
 	{0.6, 0.2, 0.2},
-	{0.6, 0.2, 0.2},
-	{0.6, 0.2, 0.2}
+	{0.3, 0.1, 0.1},
+	{0, 0, 0}
 	);
 
 IHittable::IHittable(const Material& inMaterial):
@@ -96,7 +96,42 @@ HitResult Cube::Hit(const Ray& ray)
 	
 	result.distance = tmin;
 	result.point = ray.At(result.distance);
-	result.normal = GetPosition() - result.point;
+	glm::vec3 sphereNormal = GetPosition() - result.point;
+	auto fsign = [](float value) -> float
+	{
+		return value > 0 ? 1 : -1;
+	};
+	if (abs(sphereNormal.x) > abs(sphereNormal.y) && abs(sphereNormal.x) > abs(sphereNormal.z))
+		result.normal = {fsign(sphereNormal.x), 0.f, 0.f};
+	else if (abs(sphereNormal.y) > abs(sphereNormal.x) && abs(sphereNormal.y) > abs(sphereNormal.z))
+		result.normal = {0.f, fsign(sphereNormal.y), 0.f};
+	else
+		result.normal = {0.f, 0.f, fsign(sphereNormal.z)};
 	
 	return result;
+}
+
+Plane::Plane(const glm::vec3& normal, const Material& inMaterial):
+	IHittable(inMaterial),
+	normal(-normal)
+{
+}
+
+HitResult Plane::Hit(const Ray& ray)
+{
+	constexpr float eps = 0.0001f;
+	HitResult hit;
+	float denom = dot(normal, ray.direction);
+	if (abs(denom) > eps)
+	{
+		float t = dot(ray.origin - GetPosition(), normal) / denom;
+		if (t >= eps)
+		{
+			hit.normal = normal;
+			hit.distance = t;
+			hit.object = this;
+			hit.point = ray.At(hit.distance);
+		}
+	}
+	return hit;
 }

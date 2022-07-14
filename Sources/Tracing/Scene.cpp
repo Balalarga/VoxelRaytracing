@@ -49,7 +49,8 @@ void Scene::RenderOn(Texture& texture)
 				specularLight = 0;
 			material.specular *= _lights[0]->color * specularLight;
 
-			pixel.color = toSdlColor(material.diffuse);
+			// pixel.color = toSdlColor(material.diffuse);
+			pixel.color = toSdlColor(material.ambient + material.diffuse + material.specular + material.emissive);
 		}
 		else
 		{
@@ -61,11 +62,10 @@ void Scene::RenderOn(Texture& texture)
 HitResult Scene::Intersect(const Ray& ray)
 {
 	HitResult closestHit;
-	closestHit.distance = std::numeric_limits<float>::max();
 	for (IHittable*& obj : _objects)
 	{
 		HitResult hit = obj->Hit(ray);
-		if (closestHit.distance > hit.distance)
+		if (hit.distance < closestHit.distance)
 			closestHit = hit;
 	}
 	

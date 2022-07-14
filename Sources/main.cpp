@@ -13,7 +13,7 @@ bool PollEvents()
 	SDL_Event e;
 	while (SDL_PollEvent(&e) != 0)
 	{
-		if (e.type == SDL_QUIT)
+		if (e.type == SDL_QUIT || (e.type==SDL_KEYUP && e.key.keysym.sym == SDLK_ESCAPE))
 		{
 			quit = true;
 		}
@@ -47,9 +47,13 @@ int main(int argc, char* args[])
 	sphere.SetPosition({0, 0, 5});
 	scene.AddHittable(&sphere);
 	
-	Cube cube(1.f);
-	cube.SetPosition({2, 0, 5});
-	scene.AddHittable(&cube);
+	Sphere sphere2(2.f);
+	sphere2.SetPosition({2, 0, 5});
+	scene.AddHittable(&sphere2);
+	
+	Plane plane(glm::vec3(0.f, 1.f, 0.f));
+	plane.SetPosition({0, -3, 0});
+	scene.AddHittable(&plane);
 	
 	bool quit = false;
 	while (!quit)

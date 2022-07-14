@@ -13,7 +13,7 @@ struct HitResult
 	IHittable* object{};
 	glm::vec3 point{0};
 	glm::vec3 normal{0};
-	float distance{0};
+	float distance{std::numeric_limits<float>::max()};
 	
 	operator bool() const { return object != nullptr; }
 };
@@ -47,6 +47,7 @@ public:
 	float radius;
 };
 
+
 class Cube: public IHittable
 {
 public:
@@ -61,4 +62,14 @@ public:
 	
 private:
 	glm::vec3 _bounds[2]{};
+};
+
+
+class Plane : public IHittable
+{
+public:
+	Plane(const glm::vec3& normal, const Material& inMaterial = sDefaultMaterial);
+
+	glm::vec3 normal;
+	HitResult Hit(const Ray& ray) override;
 };
