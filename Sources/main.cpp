@@ -40,7 +40,7 @@ int main(int argc, char* args[])
 	Scene scene;
 	
 	Light light;
-	light.SetPosition({2, 0, 0});
+	light.SetPosition({4, 0, 0});
 	scene.AddLight(&light);
 	
 	Sphere sphere(1.f);
@@ -54,7 +54,8 @@ int main(int argc, char* args[])
 	Plane plane(glm::vec3(0.f, 1.f, 0.f));
 	plane.SetPosition({0, -3, 0});
 	scene.AddHittable(&plane);
-	
+
+	bool needUpdate = true;
 	bool quit = false;
 	while (!quit)
 	{
@@ -63,7 +64,11 @@ int main(int argc, char* args[])
 		SDL_Rect textureRect{0, 0, texture.Size().x, texture.Size().y};
 		window->Bind(texture);
 		window->Clear();
-		scene.RenderOn(texture);
+		if (needUpdate)
+		{
+			scene.RenderOn(texture);
+			needUpdate = false;
+		}
 		
 		window->Bind();
 		window->Clear();

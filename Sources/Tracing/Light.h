@@ -6,8 +6,13 @@
 class Light: public ITransformable
 {
 public:
-	Light(float intensity = 1.f, glm::vec3 color = {1.f, 1.f, 1.f});
+	glm::vec3 color{1};
+	float intensity{1};
+};
+
+
+class SpotLight: public Light
+{
+public:
 	
-	float intensity;
-	glm::vec3 color;
 };

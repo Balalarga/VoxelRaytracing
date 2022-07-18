@@ -1,11 +1,6 @@
 ﻿#include "Hittable.h"
 
-Material IHittable::sDefaultMaterial(
-	{0.0, 0.0, 0.0},
-	{0.6, 0.2, 0.2},
-	{0.3, 0.1, 0.1},
-	{0, 0, 0}
-	);
+Material IHittable::sDefaultMaterial({0.6, 0.2, 0.2}, 0.1f);
 
 IHittable::IHittable(const Material& inMaterial):
 	_material(inMaterial)
@@ -38,7 +33,7 @@ HitResult Sphere::Hit(const Ray& ray)
 		result.object = this;
 		result.distance = (-b - sqrt(discriminant)) / (2 * a);
 		result.point = ray.At(result.distance);
-		result.normal = GetPosition() - result.point;
+		result.normal = normalize(GetPosition() - result.point);
 	}
 	
 	return result;

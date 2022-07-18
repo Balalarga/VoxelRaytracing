@@ -6,7 +6,6 @@ set(VS_STARTUP_PROJECT ${PROJECT_NAME})
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Bin)
 
 set(THIRDPARTY_DIR ThirdParty)
 
@@ -21,6 +20,8 @@ if(WIN32)
     
     if(MINGW)
         set(PROJECT_LIBS ${PROJECT_LIBS} mingw32)
+    else()
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Bin)
     endif()
 else(WIN32)
     set(PROJECT_LIBS GLEW GL GLU)
@@ -35,14 +36,14 @@ set(BINARIES ${BINARIES} ${SDL_DIR}/bin)
 set(PROJECT_LIBS ${PROJECT_LIBS} SDL2 SDL2main SDL2_image SDL2_ttf)
 if (MSVC)
     set(ADDITIONAL_LINK_DIRS ${ADDITIONAL_LINK_DIRS} ${SDL_DIR}/lib/MSVC/x64)
-else()
+elseif(MINGW)
     set(ADDITIONAL_LINK_DIRS ${ADDITIONAL_LINK_DIRS} ${SDL_DIR}/lib/MinGW/x64)
 endif()
 
-set(ENABLE_IMGUI ON)
+set(ENABLE_IMGUI OFF)
 if (${ENABLE_IMGUI})
 # ImGui setup
-    add_compile_definitions(USE_IMGUI = 1)
+    add_compile_definitions(USE_IMGUI)
     set(ADDITIONAL_SOURCES
         # Main Imgui files
        ${THIRDPARTY_DIR}/ImGui/imgui.cpp
@@ -55,8 +56,6 @@ if (${ENABLE_IMGUI})
     set(ADDITIONAL_INCLUDE_DIRS ${ADDITIONAL_INCLUDE_DIRS}
         ${THIRDPARTY_DIR}/ImGui/
         ${THIRDPARTY_DIR}/ImGui/backends/)
-else()
-    add_compile_definitions(USE_IMGUI = 0)
 endif()
 
 # Find all source files

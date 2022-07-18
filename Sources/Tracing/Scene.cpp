@@ -4,18 +4,6 @@
 #include "GlmUtils.h"
 #include "Light.h"
 
-glm::vec3 sGlobalAmbient{1, 1, 1};
-
-SDL_Color toSdlColor(const glm::vec3& fColor)
-{
-	return {
-		static_cast<Uint8>(fColor.r * 255.f),
-		static_cast<Uint8>(fColor.g * 255.f),
-		static_cast<Uint8>(fColor.b * 255.f),
-		255
-	};
-}
-
 
 void Scene::RenderOn(Texture& texture)
 {
@@ -24,39 +12,47 @@ void Scene::RenderOn(Texture& texture)
 	{
 		Ray ray;
 		ray.origin = {0.f, 0.f, 0.f};
-		float nx = (pixel.ux * 2.f - 1.f) * aspectRatio;
-		float ny = pixel.uy * 2.f - 1.f;
-		ray.direction = {nx, ny, -1.f};
-
-		if (HitResult hit = Intersect(ray))
-		{
-			Material material = hit.object->GetMaterial();
-			if (_lights.empty())
-			{
-				pixel.color = toSdlColor(material.diffuse);
-				return;
-			}
-			material.ambient *= sGlobalAmbient;
-
-			glm::vec3 lightDir = normalize(_lights[0]->GetPosition() - hit.point);
-			float diffuseLight = std::max(dot(hit.normal, lightDir), 0.f);
-			material.diffuse *= _lights[0]->color * diffuseLight;
-			
-			glm::vec3 rayInvDir = normalize(ray.origin - hit.point);
-			glm::vec3 H = normalize(lightDir + rayInvDir);
-			float specularLight = pow(std::max(dot(hit.normal, H), 0.f), material.shininess);
-			if (diffuseLight <= 0)
-				specularLight = 0;
-			material.specular *= _lights[0]->color * specularLight;
-
-			// pixel.color = toSdlColor(material.diffuse);
-			pixel.color = toSdlColor(material.ambient + material.diffuse + material.specular + material.emissive);
-		}
-		else
-		{
-			pixel.color = _backgroundColor;
-		}
+		float rx = (pixel.ux * 2.f - 1.f) * aspectRatio;
+		float ry = pixel.uy * 2.f - 1.f;
+		ray.direction = {rx, ry, -1.f};
+		
+		glm::vec3 sceneColor = Render(pixel, ray, _bounsDepth);
+		
+		pixel.color = {
+			static_cast<Uint8>(sceneColor.r * 255.f),
+			static_cast<Uint8>(sceneColor.g * 255.f),
+			static_cast<Uint8>(sceneColor.b * 255.f),
+			255};
 	});
+}
+
+glm::vec3 Scene::Render(PixelData& pixel, const Ray& ray, int bounsDepth)
+{
+	if (bounsDepth == 0)
+		return _backgroundColor;
+	
+	if (HitResult hit = Intersect(ray))
+	{
+		const Material& material = hit.object->GetMaterial();
+
+		glm::vec3 diffuse{0};
+		glm::vec3 specular{0};
+		for (Light* light: _lights)
+		{
+			glm::vec3 lightDir = normalize(light->GetPosition() - hit.point);
+			float diff = std::max(dot(hit.normal, lightDir), 0.f);
+			diffuse += diff * light->color * light->intensity;
+
+			glm::vec3 reflectDir = reflect(lightDir, hit.normal);
+			float spec = pow(std::max(dot(ray.direction, reflectDir), 0.0f), material.shiningExponent);
+			specular += material.specularStrength * spec * light->color * light->intensity;
+		}
+		diffuse *=  material.diffuseColor;
+		specular *= material.specularColor;
+		return diffuse + specular;
+	}
+	
+	return _backgroundColor;
 }
 
 HitResult Scene::Intersect(const Ray& ray)
